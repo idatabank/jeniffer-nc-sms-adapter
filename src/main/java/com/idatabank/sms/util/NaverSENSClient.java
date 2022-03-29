@@ -1,4 +1,4 @@
-package idatabank.com.custom.util;
+package com.idatabank.sms.util;
 
 import com.aries.extension.util.LogUtil;
 import com.google.gson.Gson;
@@ -17,6 +17,7 @@ import java.util.Base64;
 public class NaverSENSClient {
     private final int CONNECTION_TIME_OUT	= 5 * 1000;
     private final String ENCODING			= "UTF-8";
+    private final int SUCESS_CODE           = 202;
 
     private NaverSENSProperties naverSENSProperties;
     private String message;
@@ -35,12 +36,13 @@ public class NaverSENSClient {
         try{
             byte[] postDataBytes = getSMSQuery().getBytes(ENCODING);
 
-            URL url = new URL(naverSENSProperties.getUrlAPI());
+            URL url = new URL(naverSENSProperties.getUrl());
 
             connection = (HttpURLConnection) url.openConnection();
 
             connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setRequestProperty("charset", ENCODING);
 
             connection.setRequestProperty("x-ncp-apigw-timestamp", currentTimeMillis);
             connection.setRequestProperty("x-ncp-iam-access-key", naverSENSProperties.getApiKey());
@@ -59,10 +61,10 @@ public class NaverSENSClient {
 
             InputStream in = null;
 
-            if (connection.getResponseCode() >= 400) {
-                in = connection.getErrorStream();
-            } else {
+            if (connection.getResponseCode() == SUCESS_CODE) {
                 in = connection.getInputStream();
+            } else {
+                in = connection.getErrorStream();
             }
 
             //InputStream in = connection.getInputStream();
@@ -74,9 +76,10 @@ public class NaverSENSClient {
 
             reader.close();
 
+            LogUtil.info("Sending NaverSENSClient Message..");
             return response.toString();
         }catch (Exception ex) {
-            LogUtil.error("Error while pushing the message. Reason : " + ex.toString());
+            LogUtil.error("Error while sending the message. Reason : " + ex);
             return null;
         }finally {
             if (connection != null) connection.disconnect();
@@ -87,7 +90,7 @@ public class NaverSENSClient {
         String space = " ";
         String newLine = "\n";
         String method = "POST";
-        String url = String.format("/sms/v2/services/%s/messages", naverSENSProperties.getServiceId());
+        String url = naverSENSProperties.getUrlAPI();
         String timestamp = currentTimeMillis;
         String accessKey = naverSENSProperties.getApiKey();
         String secretKey = naverSENSProperties.getSecretKey();
@@ -104,11 +107,11 @@ public class NaverSENSClient {
 
         SecretKeySpec signingKey = null;
         try {
-            signingKey = new SecretKeySpec(secretKey.getBytes("UTF-8"), "HmacSHA256");
+            signingKey = new SecretKeySpec(secretKey.getBytes(ENCODING), "HmacSHA256");
             Mac mac = Mac.getInstance("HmacSHA256");
             mac.init(signingKey);
 
-            byte[] rawHmac = mac.doFinal(message.getBytes("UTF-8"));
+            byte[] rawHmac = mac.doFinal(message.getBytes(ENCODING));
             String encodeBase64String = Base64.getEncoder().encodeToString(rawHmac);
 
             LogUtil.info("Create Signature..");

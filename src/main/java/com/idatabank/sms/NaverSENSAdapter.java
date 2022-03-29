@@ -1,11 +1,11 @@
-package idatabank.com.custom;
+package com.idatabank.sms;
 
 import com.aries.extension.data.EventData;
 import com.aries.extension.handler.EventHandler;
 import com.aries.extension.util.ConfigUtil;
 import com.aries.extension.util.LogUtil;
-import idatabank.com.custom.util.NaverSENSClient;
-import idatabank.com.custom.util.NaverSENSProperties;
+import com.idatabank.sms.util.NaverSENSClient;
+import com.idatabank.sms.util.NaverSENSProperties;
 
 public class NaverSENSAdapter implements EventHandler {
     @Override
@@ -23,32 +23,36 @@ public class NaverSENSAdapter implements EventHandler {
         StringBuilder message = new StringBuilder();
 
         for(EventData data : events) {
+            LogUtil.info("---------------EventData---------------");
             LogUtil.info("Domain ID : " + data.domainId);
-            LogUtil.info("Instance Name : " + data.instanceName);
+            LogUtil.info("domainName : " + data.domainName);
+            LogUtil.info("instanceId : " + data.instanceId);
+            LogUtil.info("instanceName : " + data.instanceName);
             LogUtil.info("time : " + data.time);
-            LogUtil.info("Error Type : " + data.errorType);
+            LogUtil.info("errorType : " + data.errorType);
+            LogUtil.info("metricsName : " + data.metricsName);
+            LogUtil.info("eventLevel : " + data.eventLevel);
+            LogUtil.info("message : " + data.message);
+            LogUtil.info("value : " + data.value);
+            LogUtil.info("otype : " + data.otype);
+            LogUtil.info("detailMessage : " + data.detailMessage);
+            LogUtil.info("serviceName : " + data.serviceName);
+            LogUtil.info("txid : " + data.txid);
+            LogUtil.info("------------------End------------------");
 
+            message.append(data.domainName);
+            message.append(".");
             message.append(data.instanceName);
             message.append("\n");
-            message.append(data.time);
-            message.append("\n");
             message.append(data.errorType);
-
-            LogUtil.info("URL : " + naverSENSProperties.getUrlAPI());
 
             NaverSENSClient client = new NaverSENSClient(message.toString(), naverSENSProperties);
             String result = client.SMS();
 
-            LogUtil.info("result : " + result.toString());
-
-            if (result == null) { //exception occurred
+            if (result == null) {
                 LogUtil.info("Error sending the message.");
             } else {
-                //Gson gson = new Gson();
-                //TelegramResponse response = gson.fromJson(result, TelegramResponse.class);
-                //if (!response.isOk()) { //Telegram did not return true:ok
-                //    LogUtil.info(String.format("Message was not sent, Status Code From Telegram [%d]. Response Message [%s]", response.getError_code(), response.getDescription()));
-                //}
+                LogUtil.info("result : " + result.toString());
             }
         }
     }

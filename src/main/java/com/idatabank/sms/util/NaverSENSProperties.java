@@ -1,4 +1,4 @@
-package idatabank.com.custom.util;
+package com.idatabank.sms.util;
 
 public class NaverSENSProperties {
     private final String API_PREFIX = "https://sens.apigw.ntruss.com";
@@ -7,7 +7,6 @@ public class NaverSENSProperties {
     private String apiKey;
     private String secretKey;
     private String serviceId;
-
     private String conTitle;
     private final String countryCode = "82";
     private String fromN;
@@ -73,8 +72,11 @@ public class NaverSENSProperties {
         this.toN = toN;
     }
 
-    public String getUrlAPI() {
-        return String.format("%s/sms/v2/services/%s/messages", API_PREFIX, getServiceId());
+    public String getUrl() {
+        return String.format("%s%s", API_PREFIX, getUrlAPI());
     }
 
+    public String getUrlAPI() {
+        return String.format("/sms/v2/services/%s/messages", getServiceId());
+    }
 }
