@@ -12,15 +12,13 @@ public class NaverSENSAdapter implements EventHandler {
     public void on(EventData[] events) {
         NaverSENSProperties naverSENSProperties = new NaverSENSProperties();
 
-        //server_view.conf로 부터 사용자 정의 옵션 사용
+        //server_view.conf
         naverSENSProperties.setApiKey(ConfigUtil.getValue("NaverApiKey", null));
         naverSENSProperties.setSecretKey(ConfigUtil.getValue("SecretKey", null));
         naverSENSProperties.setServiceId(ConfigUtil.getValue("ServiceID", null));
         naverSENSProperties.setConTitle(ConfigUtil.getValue("ConTitle", null));
         naverSENSProperties.setFromN(ConfigUtil.getValue("FromNumber", null));
         naverSENSProperties.setToN(ConfigUtil.getValue("ToNumber", null));
-
-        StringBuilder message = new StringBuilder();
 
         for(EventData data : events) {
             LogUtil.info("---------------EventData---------------");
@@ -39,6 +37,8 @@ public class NaverSENSAdapter implements EventHandler {
             LogUtil.info("serviceName : " + data.serviceName);
             LogUtil.info("txid : " + data.txid);
             LogUtil.info("------------------End------------------");
+
+            StringBuilder message = new StringBuilder();
 
             message.append(data.domainName);
             message.append(".");
