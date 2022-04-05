@@ -2,23 +2,15 @@ package com.idatabank.sms;
 
 import com.aries.extension.data.EventData;
 import com.aries.extension.handler.EventHandler;
-import com.aries.extension.util.ConfigUtil;
 import com.aries.extension.util.LogUtil;
+import com.idatabank.sms.util.ConfUtil;
 import com.idatabank.sms.util.NaverSENSClient;
 import com.idatabank.sms.util.NaverSENSProperties;
 
 public class NaverSENSAdapter implements EventHandler {
     @Override
     public void on(EventData[] events) {
-        NaverSENSProperties naverSENSProperties = new NaverSENSProperties();
-
-        //server_view.conf
-        naverSENSProperties.setApiKey(ConfigUtil.getValue("NaverApiKey", null));
-        naverSENSProperties.setSecretKey(ConfigUtil.getValue("SecretKey", null));
-        naverSENSProperties.setServiceId(ConfigUtil.getValue("ServiceID", null));
-        naverSENSProperties.setConTitle(ConfigUtil.getValue("ConTitle", null));
-        naverSENSProperties.setFromN(ConfigUtil.getValue("FromNumber", null));
-        naverSENSProperties.setToN(ConfigUtil.getValue("ToNumber", null));
+        LogUtil.info("NaverSENSAdapter-1.0.1...");
 
         for(EventData data : events) {
             LogUtil.info("---------------EventData---------------");
@@ -38,21 +30,25 @@ public class NaverSENSAdapter implements EventHandler {
             LogUtil.info("txid : " + data.txid);
             LogUtil.info("------------------End------------------");
 
-            StringBuilder message = new StringBuilder();
+            for (int idx = 1; idx <= Integer.parseInt(ConfUtil.getValue("MaxAddressee")); idx++) {
+                NaverSENSProperties naverSENSProperties = ConfUtil.getNaverSENSProperties(idx);
 
-            message.append(data.domainName);
-            message.append(".");
-            message.append(data.instanceName);
-            message.append("\n");
-            message.append(data.errorType);
+                StringBuilder message = new StringBuilder();
 
-            NaverSENSClient client = new NaverSENSClient(message.toString(), naverSENSProperties);
-            String result = client.SMS();
+                message.append(data.domainName);
+                message.append(".");
+                message.append(data.instanceName);
+                message.append("\n");
+                message.append(data.errorType);
 
-            if (result == null) {
-                LogUtil.info("Error sending the message.");
-            } else {
-                LogUtil.info("result : " + result.toString());
+                NaverSENSClient client = new NaverSENSClient(message.toString(), naverSENSProperties);
+                String result = client.SMS();
+
+                if (result == null) {
+                    LogUtil.info("Error sending the message.");
+                } else {
+                    LogUtil.info("result : " + result.toString());
+                }
             }
         }
     }

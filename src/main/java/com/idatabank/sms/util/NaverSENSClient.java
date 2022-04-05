@@ -15,9 +15,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
 public class NaverSENSClient {
-    private final int CONNECTION_TIME_OUT	= 5 * 1000;
-    private final String ENCODING			= "UTF-8";
-    private final int SUCESS_CODE           = 202;
+    private final int CONNECTION_TIME_OUT = 5 * 1000;
+    private final String ENCODING = "UTF-8";
+    private final int SUCESS_CODE = 202;
 
     private NaverSENSProperties naverSENSProperties;
     private String message;
@@ -33,7 +33,7 @@ public class NaverSENSClient {
     public String SMS() {
         HttpURLConnection connection = null;
 
-        try{
+        try {
             byte[] postDataBytes = getSMSQuery().getBytes(ENCODING);
 
             URL url = new URL(naverSENSProperties.getUrl());
@@ -78,10 +78,10 @@ public class NaverSENSClient {
 
             LogUtil.info("Sending NaverSENSClient Message..");
             return response.toString();
-        }catch (Exception ex) {
+        } catch (Exception ex) {
             LogUtil.error("Error while sending the message. Reason : " + ex);
             return null;
-        }finally {
+        } finally {
             if (connection != null) connection.disconnect();
         }
     }
