@@ -30,16 +30,16 @@ public class NaverSENSAdapter implements EventHandler {
             LogUtil.info("txid : " + data.txid);
             LogUtil.info("------------------End------------------");
 
+            StringBuilder message = new StringBuilder();
+
+            message.append(data.domainName);
+            message.append(".");
+            message.append(data.instanceName);
+            message.append("\n");
+            message.append(data.errorType);
+
             for (int idx = 1; idx <= Integer.parseInt(ConfUtil.getValue("MaxAddressee")); idx++) {
                 NaverSENSProperties naverSENSProperties = ConfUtil.getNaverSENSProperties(idx);
-
-                StringBuilder message = new StringBuilder();
-
-                message.append(data.domainName);
-                message.append(".");
-                message.append(data.instanceName);
-                message.append("\n");
-                message.append(data.errorType);
 
                 NaverSENSClient client = new NaverSENSClient(message.toString(), naverSENSProperties);
                 String result = client.SMS();
